@@ -27,6 +27,7 @@
                          <th>NAMA</th>
                          <th>TANGGAL LEMBUR</th>
                          <th>WAKTU LEMBUR</th>
+                         <th>DURASI</th>
                          <th>AKSI</th>
                      </tr>
                  </thead>
@@ -39,6 +40,7 @@
                              <td><?= $b['nama_pegawai']; ?></td>
                              <td><?= $b['date']; ?></td>
                              <td><?= date($b['waktu_lembur']); ?></td>
+                             <td><?= $b['durasi']; ?></td>
                              <td>
                                  <a class="btn btn-theme ml-1" href="" data-toggle="modal" data-target=".bd-example-modal<?= $b['id_lembur']; ?>">Edit</a>
                                  <a class="btn btn-danger ml-1" href="<?= base_url('admin/hapus-lembur') ?>/<?= $b['id_lembur']; ?>" onclick="return confirm('Yakin Ingin Menghapus?');">Hapus</a>
@@ -85,6 +87,12 @@
                                          <input type="time" name="time" class="form-control" required>
                                      </div>
                                  </div>
+                                 <div class="form-group">
+                                     <label class="col-sm-12">Durasi</label>
+                                     <div class="col-sm-12">
+                                        <input type="number" step="0.25" name="durasi" class="form-control" placeholder="Contoh: 1.5 untuk 1 jam 30 menit" required>
+                                     </div>
+                                 </div>
                              </div>
                              <div class="modal-footer">
                                  <button type="button" class="btn btn-default btn-flat" data-dismiss="modal">Close</button>
@@ -104,6 +112,7 @@
                 $nama_pegawai = $j['nama_pegawai'];
                 $date = $j['date'];
                 $waktu_lembur = $j['waktu_lembur'];
+                $durasi = $j['durasi'];
 
             ?>
              <div class="modal fade bd-example-modal<?php echo $id_lembur; ?>" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
@@ -142,6 +151,12 @@
                                          <label class="col-sm-12">Waktu</label>
                                          <div class="col-sm-12">
                                              <input type="time" name="time" class="form-control" value="<?= $waktu_lembur ?>" required>
+                                         </div>
+                                     </div>
+                                     <div class="form-group">
+                                         <label class="col-sm-12">Waktu</label>
+                                         <div class="col-sm-12">
+                                         <input type="number" step="0.25" name="durasi" value="<?= $j['durasi'] ?>" class="form-control" required>
                                          </div>
                                      </div>
                                  </div>

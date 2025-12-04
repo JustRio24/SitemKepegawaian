@@ -384,13 +384,34 @@ class Admin extends CI_Controller
     $id_pegawai = $this->input->post('id_pegawai', true);
     $date = $this->input->post('date', true);
     $time = $this->input->post('time', true);
+    $durasi = $this->input->post('durasi', true);
+
+    // Validasi input wajib
+    if (!$id_pegawai || !$date || !$time) {
+        $this->session->set_flashdata('error', 'Semua kolom wajib diisi.');
+        redirect('admin/tambah-lembur');
+        return;
+    }
+
+    // Validasi durasi
+    $durasi = (float) $durasi;
+    if ($durasi <= 0) {
+        $this->session->set_flashdata('error', 'Durasi lembur harus lebih dari 0 jam.');
+        redirect('admin/tambah-lembur');
+        return;
+    }
+
+    // Simpan data
     $data = [
-      "id_pegawai" => $id_pegawai,
-      "date" => $date,
-      "waktu_lembur" => $time,
+        "id_pegawai"    => $id_pegawai,
+        "date"          => $date,
+        "waktu_lembur"  => $time,
+        "durasi"        => $durasi
     ];
+
     $this->db->insert('tb_lembur', $data);
-    $this->session->set_flashdata('flash', 'Data Lembur Berhasil ditambah');
+
+    $this->session->set_flashdata('flash', 'Data lembur berhasil ditambahkan!');
     redirect('admin/tambah-lembur');
   }
   public function edit_lembur_pegawai()
@@ -401,22 +422,54 @@ class Admin extends CI_Controller
     $id_pegawai = $this->input->post('id_pegawai', true);
     $date = $this->input->post('date', true);
     $time = $this->input->post('time', true);
+    $durasi = $this->input->post('durasi', true);
+
+    if (!$id_lembur) {
+        $this->session->set_flashdata('error', 'ID Lembur tidak ditemukan.');
+        redirect('admin/tambah-lembur');
+        return;
+    }
+
+    // Validasi kondisi wajib
+    if (!$id_pegawai || !$date || !$time) {
+        $this->session->set_flashdata('error', 'Semua kolom wajib diisi.');
+        redirect('admin/tambah-lembur');
+        return;
+    }
+
+    // Validasi durasi lembur
+    $durasi = (float) $durasi;
+    if ($durasi <= 0) {
+        $this->session->set_flashdata('error', 'Durasi lembur harus lebih dari 0 jam.');
+        redirect('admin/tambah-lembur');
+        return;
+    }
+
     $data = [
-      "id_pegawai" => $id_pegawai,
-      "date" => $date,
-      "waktu_lembur" => $time,
+        "id_pegawai"    => $id_pegawai,
+        "date"          => $date,
+        "waktu_lembur"  => $time,
+        "durasi"        => $durasi
     ];
+
     $this->db->where('id_lembur', $id_lembur);
     $this->db->update('tb_lembur', $data);
-    $this->session->set_flashdata('flash', 'Data Lembur Berhasil ditambah');
+
+    $this->session->set_flashdata('flash', 'Data lembur berhasil diperbarui!');
     redirect('admin/tambah-lembur');
   }
   public function hapus_lembur_pegawai($id)
   {
-    $this->db->where('id_lembur', $id);
-    $this->db->delete('tb_lembur');
-    $this->session->set_flashdata('flash', ' Berhasil Dihapus');
-    redirect('admin/tambah-lembur');
+    if (!$id) {
+      $this->session->set_flashdata('error', 'ID tidak ditemukan.');
+      redirect('admin/tambah-lembur');
+      return;
+  }
+
+  $this->db->delete('tb_lembur', ['id_lembur' => $id]);
+
+  $this->session->set_flashdata('flash', 'Data lembur berhasil dihapus!');
+  redirect('admin/tambah-lembur');
   }
 
 
