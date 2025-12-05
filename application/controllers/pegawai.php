@@ -254,7 +254,9 @@ class pegawai extends CI_Controller
 
   public function ambil_absen()
   {
-    // ... (Load user, title, dll sama seperti sebelumnya) ...
+    // --- SETUP AWAL ---
+    $data['title'] = 'Absen Harian';
+    $data['user'] = $this->db->get_where('user', ['email' => $this->session->userdata('email')])->row_array();
 
     date_default_timezone_set('Asia/Jakarta');
     $tgl_skrng = date('Y-m-d');
@@ -262,7 +264,7 @@ class pegawai extends CI_Controller
 
     // --- BATAS WAKTU ---
     $jam_buka = '06:00:00';
-    $jam_batas = '08:10:00';
+    $jam_batas = '08:10:00'; // Jam masuk wajib
 
     // 1. Cek: Belum waktunya absen
     if ($waktu < $jam_buka) {
@@ -271,59 +273,96 @@ class pegawai extends CI_Controller
       return;
     }
 
+    // Ambil Input
     $lat = $this->input->post('lat', true);
     $long = $this->input->post('long', true);
     $id_peg = $this->input->post('id_peg', true);
 
-    // Koordinat Kantor
+    // Koordinat Kantor (Sesuaikan jika perlu)
     $lat_kantor = -2.9796726;
     $long_kantor = 104.7319156;
-    $jarak = $this->distance($lat, $long, $lat_kantor, $long_kantor);
 
-    if ($jarak <= 1000) {
-      // ... (Kode upload foto selfie Anda, copy paste yang lama) ...
+    // Cek Jarak
+    $jarak = $this->distance($lat, $long, $lat_kantor, $long_kantor, "K"); // Pastikan parameter unit "K" ada jika fungsi distance memerlukannya
 
-      // 2. LOGIKA HITUNG DURASI TELAT
+    // Jarak toleransi (misal 10km / 10000 meter)
+    if ($jarak <= 10000) {
+
+      // ============================================================
+      // 2. PROSES UPLOAD FOTO (INI YANG DITAMBAHKAN)
+      // ============================================================
+      $upload_image = $_FILES['userfotoselfie']['name'];
+      $new_image = ''; // Default kosong jika gagal/tidak ada foto
+
+      if ($upload_image) {
+        $config['upload_path']          = './gambar/Absensi/'; // Pastikan folder ini ada
+        $config['allowed_types']        = 'gif|jpg|png|PNG|jpeg';
+        $config['max_size']             = 10000; // 10MB
+        // Rename file agar unik (format: masuk_TIMESTAMP_IDPEGAWAI)
+        $config['file_name']            = 'masuk_' . time() . '_' . $id_peg;
+
+        $this->load->library('upload', $config);
+
+        if ($this->upload->do_upload('userfotoselfie')) {
+          // Jika sukses upload, ambil nama file baru
+          $new_image = $this->upload->data('file_name');
+        } else {
+          // Jika gagal upload, tampilkan error dan stop proses
+          $this->session->set_flashdata('s_absenggl', $this->upload->display_errors());
+          redirect('pegawai/absen-harian');
+          return;
+        }
+      } else {
+        // Jika user tidak upload foto (opsional: bisa di-return error jika wajib)
+        $this->session->set_flashdata('s_absenggl', 'Foto Selfie Wajib Diisi!');
+        redirect('pegawai/absen-harian');
+        return;
+      }
+
+      // ============================================================
+      // 3. LOGIKA HITUNG DURASI TELAT
+      // ============================================================
       $kode_keterangan = 1; // 1 = Absen Masuk
-      $status_kehadiran = 0; // 0 = On Time
-      $durasi_telat = null; // Default kosong jika tidak telat
+      $status_kehadiran = 0; // 0 = On Time (Default)
+      $durasi_telat = null;
 
       if ($waktu > $jam_batas) {
-        $status_kehadiran = 1; // 1 = Terlambat
+        $status_kehadiran = 0; // 1 = Terlambat (Sesuaikan dengan kode DB Anda, 1 atau 0)
 
         // Hitung selisih
         $awal  = new DateTime($jam_batas); // 08:10:00
         $akhir = new DateTime($waktu);     // Jam user absen
         $diff  = $awal->diff($akhir);
 
-        // Format durasi menjadi Jam:Menit:Detik (Contoh: 01:05:00)
+        // Format durasi untuk disimpan ke DB (Jam:Menit:Detik)
         $durasi_telat = $diff->format('%H:%I:%S');
 
+        // Format pesan untuk flashdata
         $durasi_format = $diff->format('%H Jam %I Menit %S Detik');
         $pesan_flash   = 'Absen Masuk Berhasil (Terlambat ' . $durasi_format . ').';
       } else {
         $pesan_flash = 'Absen Masuk Anda Berhasil.';
       }
 
+      // ============================================================
+      // 4. SIMPAN KE DATABASE
+      // ============================================================
       $data_insert = [
-        "id_pegawai"   => $id_peg,
-        "tanggal"      => $tgl_skrng,
-        "waktu"        => $waktu,
-        "keterangan"   => $kode_keterangan,
-        "status"       => $status_kehadiran,
-        "durasi_telat" => $durasi_telat, // <--- DATA DISIMPAN DI SINI
-        // Jangan lupa masukkan kolom foto jika ada
+        "id_pegawai"        => $id_peg,
+        "tanggal"           => $tgl_skrng,
+        "waktu"             => $waktu,
+        "keterangan"        => $kode_keterangan,
+        "status"            => $status_kehadiran,
+        "durasi_telat"      => $durasi_telat,
+        "foto_selfie_masuk" => $new_image // <--- Masukkan nama file hasil upload
       ];
 
-      // Jika ada foto dari upload logic
-      if (isset($new_image)) {
-        $data_insert['foto_selfie_masuk'] = $new_image;
-      }
-
       $this->db->insert('tb_presents', $data_insert);
+
       $this->session->set_flashdata('flash', $pesan_flash);
       redirect('pegawai/absen-harian');
     } else {
+      // Jika jarak terlalu jauh
       $this->session->set_flashdata('s_absenggl', 'Absen Gagal, Anda Terlalu Jauh Dari Kantor');
       redirect('pegawai/absen-harian');
     }
@@ -351,14 +390,14 @@ class pegawai extends CI_Controller
     $jam_sekarang = date('H'); // Mengambil jam saja (format 00-23)
 
     // --- LOGIKA BARU: Cek apakah sudah jam 5 sore (17:00) ke atas ---
-    if ($jam_sekarang >= 17) {
+    if ($jam_sekarang >= 12) {
 
       // Cek Jarak
       $jarak = $this->distance($lat, $long, $lat_kantor, $long_kantor);
 
       // Toleransi jarak (misal 10 km / 10000 meter seperti di kode asli, 
       // walau biasanya absen radiusnya meter, misal 0.1 atau 100m)
-      if ($jarak <= 1000) {
+      if ($jarak <= 10000) {
 
         // Siapkan array data update dasar
         $data_update = [
@@ -366,7 +405,7 @@ class pegawai extends CI_Controller
           "tanggal" => $tgl_skrng,
           "waktu" => $waktu, // Pastikan di DB kolom ini untuk jam pulang
           "keterangan" => $keterangan,
-          "status" => 2, // Biasanya status 2 menandakan sudah pulang (sesuaikan dengan logic Anda)
+          "status" => 1, // Biasanya status 2 menandakan sudah pulang (sesuaikan dengan logic Anda)
         ];
 
         // Upload foto selfie
@@ -425,7 +464,7 @@ class pegawai extends CI_Controller
     $waktu =  date('H:i:s');
     //Upload foto selfie
     $jarak = $this->distance($lat, $long, $lat_kantor, $long_kantor);
-    if ($jarak <= 1000) {
+    if ($jarak <= 10000) {
       $upload_image = $_FILES['userfotoselfie']['name'];
       if ($upload_image) {
         $config['upload_path']          = './gambar/Absensi/';
@@ -462,19 +501,19 @@ class pegawai extends CI_Controller
 
   function distance($lat1, $lon1, $lat2, $lon2)
   {
-      $earthRadius = 6371000; // meter
+    $earthRadius = 6371000; // meter
 
-      $dLat = deg2rad($lat2 - $lat1);
-      $dLon = deg2rad($lon2 - $lon1);
+    $dLat = deg2rad($lat2 - $lat1);
+    $dLon = deg2rad($lon2 - $lon1);
 
-      $a = sin($dLat / 2) * sin($dLat / 2) +
-          cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
-          sin($dLon / 2) * sin($dLon / 2);
+    $a = sin($dLat / 2) * sin($dLat / 2) +
+      cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+      sin($dLon / 2) * sin($dLon / 2);
 
-      $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
-      $distance = $earthRadius * $c;
+    $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+    $distance = $earthRadius * $c;
 
-      return $distance; // meter
+    return $distance; // meter
   }
 
 
@@ -574,7 +613,7 @@ class pegawai extends CI_Controller
     $this->load->view('backend/f_template/footer', $data);
   }
 
-  
+
   public function detail_laporan_tpp_bulanan($id_pegawai, $bln, $thn)
   {
     $data['title'] = 'detail Laporan Payrol Bulanan';
