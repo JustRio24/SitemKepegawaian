@@ -280,7 +280,7 @@ class pegawai extends CI_Controller
     $long_kantor = 104.7319156;
     $jarak = $this->distance($lat, $long, $lat_kantor, $long_kantor);
 
-    if ($jarak <= 1000) {
+    if ($jarak <= 10000) {
       // ... (Kode upload foto selfie Anda, copy paste yang lama) ...
 
       // 2. LOGIKA HITUNG DURASI TELAT
@@ -351,14 +351,14 @@ class pegawai extends CI_Controller
     $jam_sekarang = date('H'); // Mengambil jam saja (format 00-23)
 
     // --- LOGIKA BARU: Cek apakah sudah jam 5 sore (17:00) ke atas ---
-    if ($jam_sekarang >= 17) {
+    if ($jam_sekarang >= 12) {
 
       // Cek Jarak
       $jarak = $this->distance($lat, $long, $lat_kantor, $long_kantor);
 
       // Toleransi jarak (misal 10 km / 10000 meter seperti di kode asli, 
       // walau biasanya absen radiusnya meter, misal 0.1 atau 100m)
-      if ($jarak <= 1000) {
+      if ($jarak <= 10000) {
 
         // Siapkan array data update dasar
         $data_update = [

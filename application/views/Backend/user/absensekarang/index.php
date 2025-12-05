@@ -57,7 +57,7 @@
        </div>
        <?php if ($absen['id_pegawai'] == 'peg') : ?>
          <div class="col-sm-4 text-right pb-3">
-           <button class="btn btn-round btn-theme" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus"></i> Ajukan Cuti</button>
+           <button class="btn btn-round btn-theme" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus"></i> Ajukan Izin</button>
          </div>
        <?php endif ?>
 
