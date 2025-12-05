@@ -8,7 +8,7 @@
    <div class="mt-1 mb-5 button-container">
      <div class="card shadow-sm">
        <div class="card-header  bg-primary">
-         <h6 class="text-white">VISI DAN MISI PT. SURYABUMI AGROLANGGENG</h6>
+         <h6 class="text-white">VISI DAN MISI PT Panca Karya Utama</h6>
        </div>
        <div class="card-body">
          <p class="card-text p-typo">

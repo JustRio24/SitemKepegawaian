@@ -425,7 +425,7 @@ class pegawai extends CI_Controller
     $waktu =  date('H:i:s');
     //Upload foto selfie
     $jarak = $this->distance($lat, $long, $lat_kantor, $long_kantor);
-    if ($jarak <= 100) {
+    if ($jarak <= 1000) {
       $upload_image = $_FILES['userfotoselfie']['name'];
       if ($upload_image) {
         $config['upload_path']          = './gambar/Absensi/';
