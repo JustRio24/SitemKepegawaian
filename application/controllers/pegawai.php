@@ -276,11 +276,11 @@ class pegawai extends CI_Controller
     $id_peg = $this->input->post('id_peg', true);
 
     // Koordinat Kantor
-    $lat_kantor = -3.042176;
-    $long_kantor = 104.842945;
+    $lat_kantor = -2.9796726;
+    $long_kantor = 104.7319156;
     $jarak = $this->distance($lat, $long, $lat_kantor, $long_kantor);
 
-    if ($jarak <= 100) {
+    if ($jarak <= 1000) {
       // ... (Kode upload foto selfie Anda, copy paste yang lama) ...
 
       // 2. LOGIKA HITUNG DURASI TELAT
@@ -341,8 +341,8 @@ class pegawai extends CI_Controller
     $keterangan = $this->input->post('keterangan', true);
 
     // Koordinat Kantor
-    $lat_kantor = -3.042176;
-    $long_kantor = 104.842945;
+    $lat_kantor = -2.9796726;
+    $long_kantor = 104.7319156;
 
     // Setting Waktu
     date_default_timezone_set('Asia/Jakarta');
@@ -358,7 +358,7 @@ class pegawai extends CI_Controller
 
       // Toleransi jarak (misal 10 km / 10000 meter seperti di kode asli, 
       // walau biasanya absen radiusnya meter, misal 0.1 atau 100m)
-      if ($jarak <= 100) {
+      if ($jarak <= 1000) {
 
         // Siapkan array data update dasar
         $data_update = [
@@ -418,8 +418,8 @@ class pegawai extends CI_Controller
     $id_peg = $this->input->post('id_peg', true);
     $id_presents = $this->input->post('id_presents', true);
     $keterangan = $this->input->post('keterangan', true);
-    $lat_kantor = -3.042176;
-    $long_kantor = 104.842945;
+    $lat_kantor = -2.9796726;
+    $long_kantor = 104.7319156;
     date_default_timezone_set('Asia/Jakarta');
     $tgl_skrng = date('Y-m-d');
     $waktu =  date('H:i:s');
