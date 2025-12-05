@@ -69,12 +69,12 @@ $nilai_bpjs = floor($gaji_kotor_dasar * ($bpjs_persen / 100));
 <body <?php if ($this->uri->segment(2) === 'cetak-payrol-pegawai') : ?> onload="window.print()" <?php else : endif; ?>>
   <center>
     <table id="" class="table table-bordered" style="width: 100%; max-width: 800px;">
-      <h4 class="text-center">..::PT.PESONA MAJOLELO PROPERTY::..</h4>
+      <h4 class="text-center">..::PT PANCA KARYA UTAMA::..</h4>
       <center>
         <h6 class="text-center"><small>
-            Majolelo Hotel & Townhouse<br>
-            Jl.Alai Parak Kopi, Kec. Palembang Utara, Kota Palembang, Sumatera Barat<br>
-            e-mail : perumahanmajolelo@gmail.com <br>
+            Project Management & Construction<br>
+            Jl. Sungai Sahang No.3654, Lorok Pakjo, Kec. Ilir Bar. I, Kota Palembang, Sumatera Selatan 30151<br>
+            e-mail : pancakaryautamabussiness@gmail.com <br>
             Palembang - Indonesia
           </small>
         </h6>

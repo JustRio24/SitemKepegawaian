@@ -82,7 +82,7 @@
          </div>
          <div class="text-center mb-3">
            <h3 class="mb-0"><b>LAPORAN PAYROL PEGAWAI</b></h3>
-           <h5 class="mb-0"><b>PT.PESONA MAJOLELO PROPERTY</b></h5>
+           <h5 class="mb-0"><b>PT.PANCA KARYA UTAMA</b></h5>
 
            <hr>
          </div>
