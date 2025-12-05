@@ -154,9 +154,9 @@
                                          </div>
                                      </div>
                                      <div class="form-group">
-                                         <label class="col-sm-12">Waktu</label>
+                                         <label class="col-sm-12">Durasi</label>
                                          <div class="col-sm-12">
-                                         <input type="number" step="0.25" name="durasi" value="<?= $j['durasi'] ?>" class="form-control" required>
+                                         <input type="number" step="0.25" name="durasi" value="<?= $durasi ?? '' ?>" class="form-control" required>
                                          </div>
                                      </div>
                                  </div>
