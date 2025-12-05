@@ -27,21 +27,30 @@ function nmbulan($angka)
   }
 }
 
-// --- PERHITUNGAN LOGIKA TAMPILAN ---
-// Mengambil nilai denda dari database (pastikan controller sudah mengirim data ini)
+// --- LOGIKA PERHITUNGAN TAMPILAN ---
+
+// 1. Hitung Durasi Jam Lembur (Baru)
+// Rumus: Total Uang Lembur dibagi Rate Overtime Jabatan
+$rate_lembur = isset($gaji['overtime']) ? $gaji['overtime'] : 0; 
+$total_jam_lembur = 0;
+
+if ($rate_lembur > 0 && $gaji['gaji_lembur'] > 0) {
+    // Pembulatan 1 angka di belakang koma (misal 5.5 Jam)
+    $total_jam_lembur = round($gaji['gaji_lembur'] / $rate_lembur, 1); 
+}
+
+// 2. Hitung Detail Denda
 $nilai_denda = isset($gaji['denda']) ? $gaji['denda'] : 0; 
-// Menghitung balik total menit dari nominal denda (Denda / 2000)
 $total_menit_telat = ($nilai_denda > 0) ? ($nilai_denda / 2000) : 0;
 
-// Menghitung Dasar Pengenaan Pajak & BPJS (Gaji Pokok + Lembur)
-// Note: Bonus biasanya kena pajak juga, tapi kita ikuti logika sebelumnya (Pokok + Lembur)
+// 3. Hitung Dasar Pengenaan Pajak & BPJS
 $gaji_kotor_dasar = $gaji['gaji_pokok'] + $gaji['gaji_lembur'];
 
-// Hitung PPh (0.5%)
+// 4. Hitung PPh (0.5%)
 $pph_persen = 0.5;
 $nilai_pph = floor($gaji_kotor_dasar * ($pph_persen / 100));
 
-// Hitung BPJS (2%)
+// 5. Hitung BPJS (2%)
 $bpjs_persen = 2;
 $nilai_bpjs = floor($gaji_kotor_dasar * ($bpjs_persen / 100));
 
@@ -64,9 +73,9 @@ $nilai_bpjs = floor($gaji_kotor_dasar * ($bpjs_persen / 100));
       <center>
         <h6 class="text-center"><small>
             Majolelo Hotel & Townhouse<br>
-            Jl.Alai Parak Kopi, Kec. Padang Utara, Kota Padang, Sumatera Barat<br>
+            Jl.Alai Parak Kopi, Kec. Palembang Utara, Kota Palembang, Sumatera Barat<br>
             e-mail : perumahanmajolelo@gmail.com <br>
-            Padang - Indonesia
+            Palembang - Indonesia
           </small>
         </h6>
       </center>
@@ -106,7 +115,10 @@ $nilai_bpjs = floor($gaji_kotor_dasar * ($bpjs_persen / 100));
       </tr>
       <tr>
         <th width=44 scope=col class="text-center">2</th>
-        <th width=300 scope=col>Upah Lembur </th>
+        <th width=300 scope=col>
+            Upah Lembur <br>
+            <small style="font-weight: normal; font-size: 11px; color: #555;">(Total Durasi: <?= $total_jam_lembur ?> Jam)</small>
+        </th>
         <th width=508 scope=col colspan="5" class="text-end"><?= rupiah($gaji['gaji_lembur']) ?></th>
       </tr>
       <tr>
@@ -171,7 +183,7 @@ $nilai_bpjs = floor($gaji_kotor_dasar * ($bpjs_persen / 100));
                 </tr>
                 <tr>
                     <td>Lembur</td>
-                    <td>: <?= $absen['jumlem'] ?> Hari</td>
+                    <td>: <?= $total_jam_lembur ?> Jam</td>
                 </tr>
                 <tr>
                     <td>Sakit</td>
@@ -191,7 +203,7 @@ $nilai_bpjs = floor($gaji_kotor_dasar * ($bpjs_persen / 100));
       <tr>
         <td width="430"></td>
         <td class="text" align="center">
-          Padang, <?= date('d F Y') ?> <br>
+          Palembang, <?= date('d F Y') ?> <br>
           <b>Penanggung Jawab (HRD)</b>
           <br><br><br><br><br>
           <b>( .......................................... )</b>

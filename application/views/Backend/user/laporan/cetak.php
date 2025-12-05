@@ -5,14 +5,12 @@
 // $this->load->view('backend/template/header');
 function rupiah($angka)
 {
-
   $hasil_rupiah = "Rp." . number_format($angka, 0, ',', '.') . "-,";
   return $hasil_rupiah;
 }
 
 function nmbulan($angka)
 {
-
   switch ($angka) {
     case 1:
       return "Januari";
@@ -52,6 +50,18 @@ function nmbulan($angka)
       break;
   }
 }
+
+// --- LOGIKA TAMBAHAN: MENGHITUNG DURASI JAM LEMBUR ---
+// Rumus: Total Uang Lembur dibagi Rate Overtime Jabatan
+// Pastikan query controller Anda sudah join ke tabel jabatan untuk dapat field 'overtime'
+$rate_lembur = isset($gaji['overtime']) ? $gaji['overtime'] : 0;
+$total_jam_lembur = 0;
+
+if ($rate_lembur > 0 && $gaji['gaji_lembur'] > 0) {
+  // Total Uang Lembur dibagi Rate per Jam
+  $total_jam_lembur = round($gaji['gaji_lembur'] / $rate_lembur, 1);
+}
+// -----------------------------------------------------
 ?>
 
 <head>
@@ -61,7 +71,6 @@ function nmbulan($angka)
 
 <body <?php if ($this->uri->segment(2) === 'cetak-payrol-pegawai') : ?> onload="window.print()" <?php else : endif; ?>>
   <center>
-    <!-- isi -->
     <table id="" class="table table-bordered">
       <tr height="40px">
         <td colspan=11 class="align-middle">
@@ -98,9 +107,15 @@ function nmbulan($angka)
         <th width=300 scope=col>Gaji Pokok </th>
         <th width=508 scope=col colspan="5"><?= rupiah($gaji['gaji_pokok']) ?></th>
       </tr>
+
       <tr>
         <th width=44 scope=col class="text-center">2</th>
-        <th width=300 scope=col>Upah Lembur </th>
+        <th width=300 scope=col>
+          Upah Lembur <br>
+          <small style="font-weight: normal; font-size: 11px; color: #555;">
+            (Total Durasi: <?= $total_jam_lembur ?> Jam)
+          </small>
+        </th>
         <th width=508 scope=col colspan="5"><?= rupiah($gaji['gaji_lembur']) ?></th>
       </tr>
       <tr>
@@ -127,25 +142,21 @@ function nmbulan($angka)
       </tr>
       <tr>
         <td colspan=4 rowspan="4" align='center' class="align-middle"><b><?= strtoupper($gaji['keterangan']) ?></b></td>
-        <td align='center' colspan="3"><b> Masuk : <?= $absen['masuk'] ?></b></td>
+        <td align='center' colspan="3"><b> Masuk : <?= $absen['masuk'] ?> Hari</b></td>
+      </tr>
+      <tr>
+        <td align='center' colspan="3"><b> Lembur : <?= $total_jam_lembur ?> Jam</b></td>
+      </tr>
+      <tr>
+        <td align='center' colspan="3"><b> Izin Sakit : <?= $absen['sakit'] ?> Hari</b></td>
       </tr>
       <tr>
 
-        <td align='center' colspan="3"><b> Lembur : <?= $absen['jumlem'] ?></b></td>
-      </tr>
-      <tr>
-        <td align='center' colspan="3"><b> Izin Sakit : <?= $absen['sakit'] ?></b></td>
-      </tr>
-      <tr>
-
-        <td align='center' colspan="3"><b> Izin Tidak Masuk : <?= $absen['izin'] ?></b></td>
+        <td align='center' colspan="3"><b> Izin Tidak Masuk : <?= $absen['izin'] ?> Hari</b></td>
       </tr>
 
 
-    </table> <!-- tutup isi -->
-
-
-    <br>
+    </table> <br>
     <table width="625">
       <tr>
         <td width="430"><br><br><br><br></td>

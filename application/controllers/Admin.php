@@ -388,25 +388,25 @@ class Admin extends CI_Controller
 
     // Validasi input wajib
     if (!$id_pegawai || !$date || !$time) {
-        $this->session->set_flashdata('error', 'Semua kolom wajib diisi.');
-        redirect('admin/tambah-lembur');
-        return;
+      $this->session->set_flashdata('error', 'Semua kolom wajib diisi.');
+      redirect('admin/tambah-lembur');
+      return;
     }
 
     // Validasi durasi
     $durasi = (float) $durasi;
     if ($durasi <= 0) {
-        $this->session->set_flashdata('error', 'Durasi lembur harus lebih dari 0 jam.');
-        redirect('admin/tambah-lembur');
-        return;
+      $this->session->set_flashdata('error', 'Durasi lembur harus lebih dari 0 jam.');
+      redirect('admin/tambah-lembur');
+      return;
     }
 
     // Simpan data
     $data = [
-        "id_pegawai"    => $id_pegawai,
-        "date"          => $date,
-        "waktu_lembur"  => $time,
-        "durasi"        => $durasi
+      "id_pegawai"    => $id_pegawai,
+      "date"          => $date,
+      "waktu_lembur"  => $time,
+      "durasi"        => $durasi
     ];
 
     $this->db->insert('tb_lembur', $data);
@@ -425,31 +425,31 @@ class Admin extends CI_Controller
     $durasi = $this->input->post('durasi', true);
 
     if (!$id_lembur) {
-        $this->session->set_flashdata('error', 'ID Lembur tidak ditemukan.');
-        redirect('admin/tambah-lembur');
-        return;
+      $this->session->set_flashdata('error', 'ID Lembur tidak ditemukan.');
+      redirect('admin/tambah-lembur');
+      return;
     }
 
     // Validasi kondisi wajib
     if (!$id_pegawai || !$date || !$time) {
-        $this->session->set_flashdata('error', 'Semua kolom wajib diisi.');
-        redirect('admin/tambah-lembur');
-        return;
+      $this->session->set_flashdata('error', 'Semua kolom wajib diisi.');
+      redirect('admin/tambah-lembur');
+      return;
     }
 
     // Validasi durasi lembur
     $durasi = (float) $durasi;
     if ($durasi <= 0) {
-        $this->session->set_flashdata('error', 'Durasi lembur harus lebih dari 0 jam.');
-        redirect('admin/tambah-lembur');
-        return;
+      $this->session->set_flashdata('error', 'Durasi lembur harus lebih dari 0 jam.');
+      redirect('admin/tambah-lembur');
+      return;
     }
 
     $data = [
-        "id_pegawai"    => $id_pegawai,
-        "date"          => $date,
-        "waktu_lembur"  => $time,
-        "durasi"        => $durasi
+      "id_pegawai"    => $id_pegawai,
+      "date"          => $date,
+      "waktu_lembur"  => $time,
+      "durasi"        => $durasi
     ];
 
     $this->db->where('id_lembur', $id_lembur);
@@ -464,12 +464,12 @@ class Admin extends CI_Controller
       $this->session->set_flashdata('error', 'ID tidak ditemukan.');
       redirect('admin/tambah-lembur');
       return;
-  }
+    }
 
-  $this->db->delete('tb_lembur', ['id_lembur' => $id]);
+    $this->db->delete('tb_lembur', ['id_lembur' => $id]);
 
-  $this->session->set_flashdata('flash', 'Data lembur berhasil dihapus!');
-  redirect('admin/tambah-lembur');
+    $this->session->set_flashdata('flash', 'Data lembur berhasil dihapus!');
+    redirect('admin/tambah-lembur');
   }
 
 
@@ -758,14 +758,14 @@ class Admin extends CI_Controller
       $thnpilihan1 = $thn . '-' . $bln . '-01';
       $thnpilihan2 = date("Y-m-t", strtotime($thnpilihan1));
 
-      // --- KONFIGURASI POTONGAN ---
+      // --- KONFIGURASI VAR ---
       $biaya_denda_per_menit = 2000;
       $jam_masuk_kantor = '08:10:00';
       $persen_pph  = 0.005; // 0.5%
       $persen_bpjs = 0.02;  // 2%
-      // ----------------------------
+      // -----------------------
 
-      // 1. Ambil Data Jabatan
+      // 1. Ambil Data Jabatan (Untuk Tarif Gaji & Lembur)
       $this->db->select('jabatan.*');
       $this->db->from('tb_pegawai');
       $this->db->join('jabatan', 'tb_pegawai.jabatan = jabatan.id_jabatan');
@@ -777,36 +777,50 @@ class Admin extends CI_Controller
         return;
       }
 
-      // 2. Hitung Kehadiran (Gaji Pokok)
+      // 2. Hitung Gaji Pokok (Berdasarkan Kehadiran)
+      // Mengambil data dari tb_presents (Absen Pulang/Hadir)
       $this->db->where('id_pegawai', $id_pegawai);
-      $this->db->where('keterangan', 2);
+      $this->db->where('keterangan', 2); // Asumsi 2 = Hadir/Pulang
       $this->db->where('tanggal >=', $thnpilihan1);
       $this->db->where('tanggal <=', $thnpilihan2);
-      $total_msk = $this->db->count_all_results('tb_presents');
+      $total_hadir = $this->db->count_all_results('tb_presents');
 
-      // 3. Hitung Lembur
+      // Total Gaji Pokok = Jumlah Hari Hadir * Salary (Harian)
+      $total_gaji_pokok = $total_hadir * $jabatan->salary;
+
+
+      // 3. (UPDATE BARU) Hitung Uang Lembur Berdasarkan Durasi Jam
+      // Kita ambil SUM (Total) durasi dari tabel tb_lembur
+      $this->db->select_sum('durasi'); // Menjumlahkan kolom durasi
       $this->db->where('id_pegawai', $id_pegawai);
-      $this->db->where('keterangan', 3);
-      $this->db->where('tanggal >=', $thnpilihan1);
-      $this->db->where('tanggal <=', $thnpilihan2);
-      $total_lembur = $this->db->count_all_results('tb_presents');
+      $this->db->where('date >=', $thnpilihan1); // Pastikan nama kolom tanggal di tb_lembur adalah 'date'
+      $this->db->where('date <=', $thnpilihan2);
+      $query_lembur = $this->db->get('tb_lembur');
 
-      // Kalkulasi Gaji Dasar & Kotor
-      $total_msk_lembur = $jabatan->salary * $total_lembur;
-      $total_gaji_masuk = $total_msk_lembur + ($total_msk * $jabatan->salary);
-      $total_gaji_lembur = $total_lembur * $jabatan->overtime;
+      $data_lembur = $query_lembur->row();
+      $total_jam_lembur = $data_lembur->durasi; // Hasil penjumlahan durasi (misal: 15.5 jam)
 
-      // Total Gaji Kotor (Base perhitungan pajak & BPJS)
-      $total_gaji_kotor = $total_gaji_masuk + $total_gaji_lembur;
+      // Jika tidak ada lembur, set 0
+      if ($total_jam_lembur == NULL) {
+        $total_jam_lembur = 0;
+      }
+
+      // Rumus: Total Jam x Tarif Lembur Jabatan (Overtime)
+      $total_uang_lembur = $total_jam_lembur * $jabatan->overtime;
+
+
+      // 4. Hitung Total Gaji Kotor
+      $total_gaji_kotor = $total_gaji_pokok + $total_uang_lembur;
+
 
       // ============================================================
-      // 4. HITUNG POTONGAN (Denda, PPh, BPJS)
+      // 5. HITUNG POTONGAN (Denda, PPh, BPJS)
       // ============================================================
 
-      // A. Hitung Denda Keterlambatan
+      // A. Hitung Denda Keterlambatan (Dari tb_presents)
       $this->db->select('tanggal, waktu');
       $this->db->where('id_pegawai', $id_pegawai);
-      $this->db->where('keterangan', 1);
+      $this->db->where('keterangan', 1); // Absen Masuk
       $this->db->where('tanggal >=', $thnpilihan1);
       $this->db->where('tanggal <=', $thnpilihan2);
       $absen_masuk = $this->db->get('tb_presents')->result();
@@ -824,38 +838,37 @@ class Admin extends CI_Controller
       }
       $total_denda = $total_menit_telat * $biaya_denda_per_menit;
 
-      // B. Hitung PPh (0.5% dari Gaji Kotor)
+      // B. Hitung PPh (0.5%)
       $potongan_pph = $total_gaji_kotor * $persen_pph;
 
-      // C. Hitung BPJS (2% dari Gaji Kotor)
+      // C. Hitung BPJS (2%)
       $potongan_bpjs = $total_gaji_kotor * $persen_bpjs;
 
       // ============================================================
-      // 5. HASIL AKHIR
+      // 6. HASIL AKHIR
       // ============================================================
 
-      // Gaji Bersih = Kotor - Denda - PPh - BPJS
       $gaji_bersih = $total_gaji_kotor - $total_denda - $potongan_pph - $potongan_bpjs;
 
-      if ($total_gaji_masuk !== 0) {
+      if ($total_gaji_pokok > 0 || $total_uang_lembur > 0) {
         echo json_encode([
           'flash' => 'Data Ditemukan',
           // Pemasukan
-          'gaji_msk' => $total_gaji_masuk,
-          'gaji_lembur' => $total_gaji_lembur,
-          'gaji_kotor' => $total_gaji_kotor,
+          'gaji_msk'      => $total_gaji_pokok,
+          'gaji_lembur'   => $total_uang_lembur,
+          'total_jam_lembur' => $total_jam_lembur, // Kirim info jam lembur ke view
 
           // Info Potongan
           'total_menit_telat' => $total_menit_telat,
-          'total_denda' => $total_denda,
-          'potongan_pph' => floor($potongan_pph),   // Menggunakan floor agar bulat
-          'potongan_bpjs' => floor($potongan_bpjs), // Menggunakan floor agar bulat
+          'total_denda'       => $total_denda,
+          'potongan_pph'      => floor($potongan_pph),
+          'potongan_bpjs'     => floor($potongan_bpjs),
 
-          // Hasil Akhir
+          // Final
           'gaji_bersih' => floor($gaji_bersih)
         ]);
       } else {
-        echo json_encode(['flash' => 'Gaji Bulan Ini Kosong']);
+        echo json_encode(['flash' => 'Data Absensi/Lembur Kosong']);
       }
     } else {
       echo json_encode(['flash' => 'Parameter tidak lengkap']);

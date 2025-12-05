@@ -120,12 +120,24 @@ class Admin_model extends CI_model
 
 
   public function getAllGajiByDateID($tgl1, $tgl2, $id_peg)
-  {
-    $sql = "SELECT tb_pegawai.nama_pegawai,jabatan.jabatan as namjab,jabatan.id_jabatan, tb_payrol.* from tb_payrol,jabatan, tb_pegawai  where 
-        tb_payrol.id_pegawai= tb_pegawai.id_pegawai and tb_pegawai.jabatan=jabatan.id_jabatan and tb_payrol.id_pegawai='$id_peg' and tb_payrol.periode between '$tgl1' and '$tgl2'";
+{
+    // SAYA TAMBAHKAN: jabatan.salary dan jabatan.overtime di baris SELECT
+    $sql = "SELECT 
+                tb_pegawai.nama_pegawai,
+                jabatan.jabatan as namjab,
+                jabatan.id_jabatan,
+                jabatan.salary,    
+                jabatan.overtime, 
+                tb_payrol.* FROM tb_payrol, jabatan, tb_pegawai 
+            WHERE 
+                tb_payrol.id_pegawai = tb_pegawai.id_pegawai 
+                AND tb_pegawai.jabatan = jabatan.id_jabatan 
+                AND tb_payrol.id_pegawai = '$id_peg' 
+                AND tb_payrol.periode BETWEEN '$tgl1' AND '$tgl2'";
+
     $result = $this->db->query($sql);
     return $result->row_array();
-  }
+}
 
 
   public function getAllLemburPegawai($tgl1, $tgl2)
