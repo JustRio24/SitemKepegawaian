@@ -74,16 +74,14 @@
        <div class="card-body">
          <p class="card-text p-typo">
            <center><b>• VISI</b></br>
-             Menjadi produsen produk kelapa sawit yang bermutu,efisien dan produktif yang berkembang dan berlanjutan dengan melakukan.investasi terbaik pada Industrinya dan di komunitaskan nya untuk meningkatkan nilai.
+             Menjadi perusahaan konstruksi yang terpercaya dan berdaya saing tinggi melalui kualitas kerja, profesionalisme, dan inovasi berkelanjutan.
            </center></br>
            <center><b>• MISI</b></center></br>
-           • Mengembangkan perusahaan perkebunan kelapa sawit secara mantap melalui :
-           Kapital yang mantap atas tim manajemen kebun yang professional dan Berdedikasi </br>
-           • Memperluas area perkebunan pada lahan yang sangat cocok untuk mengembangkan usaha kelapa sawit.
-           dan letaknya strategis dan letaknya secara bertahap membangun kapasitas pengelolahan dan infrastuktur pendukung untuk menempatkan produk secara efisien ke dalam pasar</br>
-           • Memelihara hubungan kuat yang sudah ada dengan masyarakat sekitar dengan cara pengembangan program petani kecil kelapa sawit dan pengembangan komunitas yang berlanjutan
-
-           </br>
+           • Menghasilkan karya konstruksi yang berkualitas tinggi melalui perencanaan yang matang dan standar pengerjaan profesional. </br>
+           • Menjunjung integritas dan kepercayaan dengan memberikan pelayanan tepat waktu, transparan, dan sesuai kebutuhan klien.</br>
+           • Mengoptimalkan kompetensi sumber daya manusia agar memiliki keahlian teknis, etos kerja, dan tanggung jawab yang tinggi.</br>
+           • Menerapkan pengawasan dan manajemen proyek yang efektif untuk memastikan setiap pekerjaan berjalan aman, rapi, dan sesuai target.</br>
+           • Memanfaatkan teknologi sebagai pendukung efisiensi, tanpa mengurangi fokus utama perusahaan pada kualitas hasil konstruksi.</br>
 
          </p>
        </div>
