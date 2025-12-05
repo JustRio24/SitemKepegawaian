@@ -73,7 +73,7 @@ $nilai_bpjs = floor($gaji_kotor_dasar * ($bpjs_persen / 100));
       <center>
         <h6 class="text-center"><small>
             Project Management & Construction<br>
-            Jl. Sungai Sahang No.3654, Lorok Pakjo, Kec. Ilir Bar. I, Kota Palembang, Sumatera Selatan 30151<br>
+            Jl. Sungai Sahang No.3654, Lorok Pakjo, Kec. Ilir Bar. I, Kota Palembang<br>
             e-mail : pancakaryautamabussiness@gmail.com <br>
             Palembang - Indonesia
           </small>
