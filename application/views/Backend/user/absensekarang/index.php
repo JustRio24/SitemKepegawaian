@@ -105,7 +105,7 @@
                <?php if ($cek_lembur['id_pegawai'] != $absen['id_pegawai']) : ?>
                  <?php if ($absen['keterangan'] == 1 || $absen['keterangan'] == 2 && $absen['id_lembur'] == null) : ?>
                    <td>
-                     <?php if ($absen['keterangan'] <= 1 && $absen['id_lembur'] == null && $absen['status'] <= 1 && $absen['status'] != 2) : ?>
+                     <?php if ($absen['keterangan'] <= 1 && $absen['id_lembur'] == null && $absen['status'] <= 1 && $absen['status'] != 0) : ?>
                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#myModalPulang"><i class="fa fa-check"></i> Absen Pulang</button>
                      <?php elseif ($absen['keterangan'] == null || $absen['keterangan'] == '') : ?>
                        <span class="badge badge-danger">Belum Waktu</span>
@@ -257,7 +257,7 @@
                    <?php
                     date_default_timezone_set('Asia/Jakarta');
                     $jam_sekarang = date('H'); // Format 00-23
-                    $jam_buka_pulang = 17; // Jam 5 Sore
+                    $jam_buka_pulang = 12; // Jam 5 Sore
                     ?>
 
                    <table style="width: 100%;">
