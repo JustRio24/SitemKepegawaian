@@ -390,7 +390,7 @@ class pegawai extends CI_Controller
     $jam_sekarang = date('H'); // Mengambil jam saja (format 00-23)
 
     // --- LOGIKA BARU: Cek apakah sudah jam 5 sore (17:00) ke atas ---
-    if ($jam_sekarang >= 12) {
+    if ($jam_sekarang >= 17) {
 
       // Cek Jarak
       $jarak = $this->distance($lat, $long, $lat_kantor, $long_kantor);

@@ -257,7 +257,7 @@
                    <?php
                     date_default_timezone_set('Asia/Jakarta');
                     $jam_sekarang = date('H'); // Format 00-23
-                    $jam_buka_pulang = 12; // Jam 5 Sore
+                    $jam_buka_pulang = 17; // Jam 5 Sore
                     ?>
 
                    <table style="width: 100%;">
